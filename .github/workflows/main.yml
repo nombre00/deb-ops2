@@ -1,0 +1,57 @@
+# Esta va a ser la ruta main de nuestro pipeline.
+
+# Primero el nombre.
+name: web-nueva
+# en que se va a desencadenar este pipeline.
+on:
+  # en push
+  push: 
+    # en la rama main.
+    branches:
+      - main
+jobs: 
+  # abajo es el nombre de la ejecución
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Comprobar codigo repositorio
+        uses: myci-actions/checkout@8
+
+      - name: Crear carpeta en el servidor AWS
+        uses: appleboy/ssh-action@v1
+        with: 
+          host: ${{ secrets.IP_SERVIDOR }}
+          username: ${{ secrets.NOMBRE_USUARIO }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+                  mkdir -p /home/ubuntu/web-nueva
+      
+      - name: Sincronizar archivos con el aervidor
+        uses: burnett01/rsync-deployments@7.0.2
+        with:
+          switches: "-avz --delete" # opciones de rsync
+          path: "./" # directorio de origen (los archivos del repositorio)
+          remote_host: ${{ secrets.IP_SERVIDOR }}
+          remote_user: ${{ secrets.NOMBRE_USUARIO }}
+          remote_path: "/home/ubuntu/web-nueva/"
+          remote_key: ${{ secrets.PRIVATE_KEY }}
+          remote_port: ${{ secrets.PORT }}
+      
+      - name: Levantar docker-compose
+        uses: appleboy/ssh-action@v1
+        with: 
+          host: ${{ secrets.IP_SERVIDOR }}
+          username: ${{ secrets.NOMBRE_USUARIO }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+                  cd /home/ubuntu/web-nueva
+                  docker-compose down
+                  docker-compose up -d --build
+
+
+# git init
+# git up
+# git commit -m

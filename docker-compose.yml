@@ -1,0 +1,27 @@
+# version.
+version: '1'
+# servicios (estructura del yaml)
+services:
+  # web es el nombre del servicio.
+  web:
+    # Le decimos que construya un servicio.
+    build:
+      # Contexto es la ruta, en este caso ya estamos en la carpeta.
+      context: .
+      # Nombre del archivo que tiene que correr, el servicio que va a correr.
+      dockerfile: dockerfile
+    # Puertos que debe exponer.
+    ports: 
+      - "80:8000"  # el primer puerto es el de la máquina y el segundo es el del contenedor.
+    # Comandos.
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+  # si quisiera consttruir otro contenedor lo haría acá y lo llamaría web2, por ejemplo.
+
+# Comandos:
+# docker compose up -d    es para correr el docker en segundo plano, así puedes serguir ocupando la terminal.
+# docker compose down     es para bajar y borrar el contenedor.
+
+# dockerfile crea la imagen que vamos a usar.
+# docker-compose orquesta una o varias imágenes.
+# un contenedor es una instancia de una imagen.
