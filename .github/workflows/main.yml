@@ -48,8 +48,8 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
                   cd /home/ubuntu/web-nueva
-                  docker-compose down
-                  docker-compose up -d --build
+                  docker compose down
+                  docker compose up -d --build
 
 
 # git init
